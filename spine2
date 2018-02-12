@@ -1,0 +1,62 @@
+! Command: show running-config
+! device: spine2 (vEOS, EOS-4.18.5M)
+!
+! boot system flash:/vEOS-lab.swi
+!
+transceiver qsfp default-mode 4x10G
+!
+service routing protocols model multi-agent
+!
+hostname spine2
+!
+spanning-tree mode mstp
+!
+no aaa root
+!
+interface Ethernet1
+   description LEAF-R101
+   no switchport
+   ip address 172.16.102.1/30
+!
+interface Ethernet2
+   description LEAF-R102
+   no switchport
+   ip address 172.18.102.1/30
+!
+interface Ethernet3
+!
+interface Ethernet4
+!
+interface Ethernet5
+!
+interface Ethernet6
+!
+interface Ethernet7
+!
+interface Loopback0
+!
+interface Loopback255
+   description MGMT
+   ip address 10.255.255.2/32
+!
+interface Management1
+!
+ip routing
+!
+ip prefix-list LOOPBACKS
+   seq 10 permit 10.255.255.2/32
+!
+route-map LOOPBACKS permit 10
+   match ip address prefix-list LOOPBACKS
+!
+router bgp 65000
+   router-id 10.255.255.2
+   maximum-paths 3
+   neighbor LEAF peer-group
+   neighbor LEAF remote-as 65100
+   neighbor LEAF maximum-routes 12000 
+   neighbor 172.16.102.2 peer-group LEAF
+   neighbor 172.18.102.2 peer-group LEAF
+   redistribute connected route-map LOOPBACKS
+!
+end
