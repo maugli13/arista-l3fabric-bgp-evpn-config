@@ -1,14 +1,14 @@
 # arista-l3fabric-bgp-evpn-config
 Arista EOS L3Fabric EVPN
 
-Environmnet:
-Spine/Leaf switches - Arista 4.18.5M
-Node - VyOS 1.1.7
-ISP - VyOS 1.1.7
+<b>Environmnet:</b></br>
+Spine/Leaf switches - Arista 4.18.5M</br>
+Node - VyOS 1.1.7</br>
+ISP - VyOS 1.1.7</br>
 
-IP addressing:
+<b>IP addressing:</b>
 
-Topology
+<h3>Topology</h3>
 ![Topology should be here](l3fabric-evpn.png "Topology overview")
 
-Cheatsheet/Commonly used terms:
+<b>Cheatsheet/Commonly used terms:</b>
