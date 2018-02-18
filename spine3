@@ -1,5 +1,5 @@
 ! Command: show running-config
-! device: spine1 (vEOS, EOS-4.18.5M)
+! device: spine3 (vEOS, EOS-4.18.5M)
 !
 ! boot system flash:/vEOS-lab.swi
 !
@@ -7,7 +7,7 @@ transceiver qsfp default-mode 4x10G
 !
 service routing protocols model multi-agent
 !
-hostname spine1
+hostname spine3
 !
 spanning-tree mode mstp
 !
@@ -16,28 +16,28 @@ no aaa root
 interface Ethernet1
    description LEAF-R101
    no switchport
-   ip address 172.16.101.1/30
+   ip address 172.16.103.1/30
 !
 interface Ethernet2
    description LEAF-R102
    no switchport
-   ip address 172.18.101.1/30
+   ip address 172.18.103.1/30
 !
 interface Ethernet3
    no switchport
-   ip address 172.16.121.1/30
+   ip address 172.16.123.1/30
 !
 interface Ethernet4
    no switchport
-   ip address 172.18.121.1/30
+   ip address 172.18.123.1/30
 !
 interface Ethernet5
    no switchport
-   ip address 172.16.131.1/30
+   ip address 172.16.133.1/30
 !
 interface Ethernet6
    no switchport
-   ip address 172.18.131.1/30
+   ip address 172.18.133.1/30
 !
 interface Ethernet7
 !
@@ -45,20 +45,20 @@ interface Loopback0
 !
 interface Loopback255
    description MGMT
-   ip address 10.255.255.1/32
+   ip address 10.255.255.3/32
 !
 interface Management1
 !
 ip routing
 !
 ip prefix-list LOOPBACKS
-   seq 10 permit 10.255.255.1/32
+   seq 10 permit 10.255.255.3/32
 !
 route-map LOOPBACKS permit 10
    match ip address prefix-list LOOPBACKS
 !
 router bgp 65000
-   router-id 10.255.255.1
+   router-id 10.255.255.3
    maximum-paths 3
    neighbor LEAF peer-group
    neighbor LEAF remote-as 65100
@@ -76,10 +76,14 @@ router bgp 65000
    neighbor 10.255.255.12 peer-group LEAF-EVPN
    neighbor 10.255.255.21 peer-group LEAF-EVPN
    neighbor 10.255.255.22 peer-group LEAF-EVPN
-   neighbor 172.16.101.2 peer-group LEAF
-   neighbor 172.16.121.2 peer-group LEAF
-   neighbor 172.18.101.2 peer-group LEAF
-   neighbor 172.18.121.2 peer-group LEAF
+   neighbor 10.255.255.31 peer-group LEAF-EVPN
+   neighbor 10.255.255.32 peer-group LEAF-EVPN
+   neighbor 172.16.103.2 peer-group LEAF
+   neighbor 172.16.123.2 peer-group LEAF
+   neighbor 172.16.133.2 peer-group LEAF
+   neighbor 172.18.103.2 peer-group LEAF
+   neighbor 172.18.123.2 peer-group LEAF
+   neighbor 172.18.133.2 peer-group LEAF
    redistribute connected route-map LOOPBACKS
    !
    address-family evpn

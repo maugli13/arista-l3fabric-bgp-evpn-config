@@ -24,12 +24,20 @@ interface Ethernet2
    ip address 172.18.102.1/30
 !
 interface Ethernet3
+   no switchport
+   ip address 172.16.122.1/30
 !
 interface Ethernet4
+   no switchport
+   ip address 172.18.122.1/30
 !
 interface Ethernet5
+   no switchport
+   ip address 172.16.132.1/30
 !
 interface Ethernet6
+   no switchport
+   ip address 172.18.132.1/30
 !
 interface Ethernet7
 !
@@ -54,9 +62,31 @@ router bgp 65000
    maximum-paths 3
    neighbor LEAF peer-group
    neighbor LEAF remote-as 65100
+   no neighbor LEAF next-hop-unchanged
+   neighbor LEAF send-community
    neighbor LEAF maximum-routes 12000 
+   neighbor LEAF-EVPN peer-group
+   neighbor LEAF-EVPN remote-as 65100
+   neighbor LEAF-EVPN next-hop-unchanged
+   neighbor LEAF-EVPN update-source Loopback255
+   neighbor LEAF-EVPN ebgp-multihop 5
+   neighbor LEAF-EVPN send-community extended
+   neighbor LEAF-EVPN maximum-routes 12000 
+   neighbor 10.255.255.11 peer-group LEAF-EVPN
+   neighbor 10.255.255.12 peer-group LEAF-EVPN
+   neighbor 10.255.255.21 peer-group LEAF-EVPN
+   neighbor 10.255.255.22 peer-group LEAF-EVPN
    neighbor 172.16.102.2 peer-group LEAF
+   neighbor 172.16.122.2 peer-group LEAF
    neighbor 172.18.102.2 peer-group LEAF
+   neighbor 172.18.122.2 peer-group LEAF
    redistribute connected route-map LOOPBACKS
+   !
+   address-family evpn
+      no neighbor LEAF activate
+      neighbor LEAF-EVPN activate
+   !
+   address-family ipv4
+      no neighbor LEAF-EVPN activate
 !
 end

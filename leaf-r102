@@ -5,6 +5,8 @@
 !
 transceiver qsfp default-mode 4x10G
 !
+service routing protocols model multi-agent
+!
 hostname leaf-r102
 !
 spanning-tree mode mstp
@@ -95,7 +97,13 @@ interface Vlan4001
    description iBGP_LOCAL_PEER
    ip address 172.16.10.2/30
 !
-ip virtual-router mac-address 00:1c:aa:aa:aa:aa
+interface Vxlan1
+   vxlan source-interface Loopback0
+   vxlan udp-port 4789
+   vxlan vlan 100 vni 1100
+   vxlan vlan 200 vni 1200
+!
+ip virtual-router mac-address 50:00:43:21:12:34
 !
 ip routing
 !
@@ -105,6 +113,7 @@ ip prefix-list LOOPBACKS
 !
 mlag configuration
    domain-id MLAG1
+   heartbeat-interval 1000
    local-interface Vlan4000
    peer-address 192.168.1.1
    peer-link Port-Channel2000
@@ -124,12 +133,39 @@ router bgp 65100
    neighbor SPINE remote-as 65000
    neighbor SPINE allowas-in 1
    neighbor SPINE route-map LOOPBACKS out
-   neighbor SPINE send-community
+   neighbor SPINE send-community extended
    neighbor SPINE maximum-routes 12000 
+   neighbor SPINE-EVPN peer-group
+   neighbor SPINE-EVPN remote-as 65000
+   neighbor SPINE-EVPN update-source Loopback255
+   neighbor SPINE-EVPN allowas-in 1
+   neighbor SPINE-EVPN ebgp-multihop 5
+   neighbor SPINE-EVPN send-community extended
+   neighbor SPINE-EVPN maximum-routes 12000 
+   neighbor 10.255.255.1 peer-group SPINE-EVPN
+   neighbor 10.255.255.2 peer-group SPINE-EVPN
+   neighbor 10.255.255.3 peer-group SPINE-EVPN
    neighbor 172.16.10.1 peer-group LOCAL_PEER
    neighbor 172.18.101.1 peer-group SPINE
    neighbor 172.18.102.1 peer-group SPINE
    neighbor 172.18.103.1 peer-group SPINE
    redistribute connected route-map LOOPBACKS
+   !
+   vlan 100
+      rd 10.255.255.12:1100
+      route-target both 1100:1100
+      redistribute learned
+   !
+   vlan 200
+      rd 10.255.255.12:1200
+      route-target both 1200:1200
+      redistribute learned
+   !
+   address-family evpn
+      no neighbor SPINE activate
+      neighbor SPINE-EVPN activate
+   !
+   address-family ipv4
+      no neighbor SPINE-EVPN activate
 !
 end
